@@ -4,7 +4,7 @@ import asyncio
 
 
 @asyncio.coroutine
-def ping(loop, target):
+def ping(loop, target, dump=False):
     create =  asyncio.create_subprocess_exec('ping', '-c', '10', target,
                                           stdout=asyncio.subprocess.PIPE)
     proc = yield from create
@@ -14,13 +14,17 @@ def ping(loop, target):
         if line == b'':
             break
         l = line.decode('utf8').rstrip()
-        print(l)
+        if dump:
+            print(l)
         lines.append(l)
     transmited, received = [int(a.split(' ')[0]) for a
                             in lines[-2].split(', ')[:2]]
-    print(transmited, received)
+    stats, unit = lines[-1].split(' = ')[-1].split(' ')
+    min_, avg, max_, stddev = [float(a) for a in stats.split('/')]
+    return transmited, received, unit, min_, avg, max_, stddev
 
 loop = asyncio.get_event_loop()
-loop.run_until_complete(ping(loop, 'free.fr'))
+ping = loop.run_until_complete(ping(loop, 'free.fr'))
+print(ping)
 
 loop.close()
