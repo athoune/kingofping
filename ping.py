@@ -23,8 +23,10 @@ def ping(loop, target, dump=False):
     min_, avg, max_, stddev = [float(a) for a in stats.split('/')]
     return transmited, received, unit, min_, avg, max_, stddev
 
-loop = asyncio.get_event_loop()
-ping = loop.run_until_complete(ping(loop, 'free.fr'))
-print(ping)
 
-loop.close()
+if __name__ == '__main__':
+    loop = asyncio.get_event_loop()
+    ping = loop.run_until_complete(ping(loop, 'free.fr'))
+    print(ping)
+
+    loop.close()
